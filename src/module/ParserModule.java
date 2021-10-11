@@ -4,68 +4,77 @@ import java.util.List;
 
 public class ParserModule {
 	private List<String> lines;
+	private String currentLine;
+	private CodeModule codeModule = new CodeModule();
 	
 	public ParserModule(List<String> lines) {
 		this.lines = lines;
 	}
 
 	public void Initializer() {
-	
-		for(String line : this.lines) {
-			String command = line.trim();
-			
-			String commandType = commandType(command);
-			
-			switch(commandType) {
-			case "A_COMMAND", "L_COMMAND" :
-				symbol();
+
+		for (String line : this.lines) {
+			currentLine = line.replaceAll(" ","");
+
+			String commandType = commandType(currentLine);
+
+			switch (commandType) {
+			case "A_COMMAND", "L_COMMAND":
+				String symbol = symbol();
+				System.out.println(symbol);
 				break;
-			case "C_COMMAND" :
+			case "C_COMMAND":
+				String dest = codeModule.dest(dest());
+				String jump = codeModule.jump(jump());
+				String comp =  codeModule.comp(comp());
+				System.out.println("111" + comp + dest + jump);
 				break;
-			case "COMMENT" :
+			case "COMMENT":
 				break;
-			case "ERROR" :
-				System.out.println("ERROR");
-				return;
 			}
-			
+
 		}
 	}
-	
+
 	private String commandType(String command) {
-		if(command.length() > 1 && "//".equals(command.substring(0, 2))) {
+		if (command.length() > 1 && "//".equals(command.substring(0, 2))) {
 			return "COMMENT";
 		}
-		
-		switch(command.charAt(0)) {
-		case '(' :
+
+		switch (command.charAt(0)) {
+		case '(':
 			return "L_COMMAND";
-		case '@' :
+		case '@':
 			return "A_COMMAND";
-		case 'D', 'A', 'M':
+		default:
 			return "C_COMMAND";
-		default :
-			return "ERROR";
 		}
 	}
 
 	private String symbol() {
-
-		return "";
+		String xxx = currentLine.replaceAll("[@()]", "");
+		return xxx;
 	}
 
 	private String dest() {
-
-		return "";
-	}
-
-	private String comp() {
+		if (this.currentLine.contains("=")) {
+			this.currentLine = this.currentLine.split("=")[1];
+			return this.currentLine.split("=")[0];
+		}
 
 		return "";
 	}
 
 	private String jump() {
+		if (this.currentLine.contains(";")) {
+			this.currentLine = this.currentLine.split(";")[0];
+			return this.currentLine.split("=")[1];
+		}
 
 		return "";
+	}
+	
+	private String comp() {
+		return this.currentLine;
 	}
 }
