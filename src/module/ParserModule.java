@@ -11,32 +11,64 @@ public class ParserModule {
 		this.lines = lines;
 	}
 
-	public void Initializer() {
-
+	public String assemble() {
+		int i = 0;
+		String result = "";
+		SymbolTableModule symbolTableModule = new SymbolTableModule();
+		
 		for (String line : this.lines) {
 			currentLine = line.replaceAll(" ","");
 
 			String commandType = commandType(currentLine);
-
+			String symbol = "";
+			
 			switch (commandType) {
-			case "A_COMMAND", "L_COMMAND":
-				String symbol = symbol();
-				System.out.println(symbol);
+			case "A_COMMAND":
+				i++;
+				break;
+			case "L_COMMAND":
+				symbol = symbol();
+				symbolTableModule.addEntry(symbol, i);
+				break;
+			case "C_COMMAND":
+				i++;
+				break;
+			}
+		}
+		
+		for (String line : this.lines) {
+			currentLine = line.replaceAll(" ","");
+			currentLine = currentLine.split("//")[0];
+			
+			String commandType = commandType(currentLine);
+			String symbol = "";
+			
+			switch (commandType) {
+			case "A_COMMAND":
+				symbol = symbol();
+				result += symbolTableModule.getAddress(symbol);
+				result += "\n";
 				break;
 			case "C_COMMAND":
 				String dest = codeModule.dest(dest());
 				String jump = codeModule.jump(jump());
 				String comp =  codeModule.comp(comp());
-				System.out.println("111" + comp + dest + jump);
+				result += "111" + comp + dest + jump;
+				result += "\n";
 				break;
 			case "COMMENT":
 				break;
 			}
-
 		}
+		
+		return result;
 	}
 
 	private String commandType(String command) {
+		if(command.length() == 0) {
+			return "";
+		}
+		
 		if (command.length() > 1 && "//".equals(command.substring(0, 2))) {
 			return "COMMENT";
 		}
@@ -58,8 +90,9 @@ public class ParserModule {
 
 	private String dest() {
 		if (this.currentLine.contains("=")) {
+			String returnValue = this.currentLine.split("=")[0];
 			this.currentLine = this.currentLine.split("=")[1];
-			return this.currentLine.split("=")[0];
+			return returnValue;
 		}
 
 		return "";
@@ -67,8 +100,9 @@ public class ParserModule {
 
 	private String jump() {
 		if (this.currentLine.contains(";")) {
+			String returnValue = this.currentLine.split(";")[1];
 			this.currentLine = this.currentLine.split(";")[0];
-			return this.currentLine.split("=")[1];
+			return returnValue;
 		}
 
 		return "";

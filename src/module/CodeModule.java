@@ -99,7 +99,7 @@ public class CodeModule {
 			return "101";
 		case "JLE":
 			return "110";
-		case "JML":
+		case "JMP":
 			return "111";
 		default:
 			return "000";

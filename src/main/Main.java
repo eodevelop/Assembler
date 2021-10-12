@@ -23,7 +23,8 @@ public class Main {
 			List<String> lines = fileUtils.getLine(fileNm);
 			
 			ParserModule parserModule = new ParserModule(lines);
-			parserModule.Initializer();
+			String hackCode = parserModule.assemble();
+			fileUtils.writeFile(fileNm.split("[.]")[0] + ".hack" , hackCode);
 		}
 	}
 }
